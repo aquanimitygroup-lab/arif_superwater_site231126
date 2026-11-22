@@ -183,6 +183,7 @@ a{color:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ing-symbol{position:absolute;z-index:2;top:24px;left:24px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 12px 30px -14px rgba(14,16,54,.35);min-width:110px}
 .ing-symbol b{display:block;font-size:40px;font-weight:900;line-height:1;letter-spacing:-.03em;transition:opacity .2s,transform .2s}
+.ing-symbol b.long{font-size:28px;letter-spacing:-.02em}
 .ing-symbol.swap b,.ing-symbol.swap small{opacity:0;transform:translateY(6px)}
 .ing-symbol small{display:block;transition:opacity .2s}
 .ing-symbol small{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
@@ -598,7 +599,7 @@ body.cart-open .drawer{transform:none;visibility:visible}
           <p data-cms="ing.c3.text">Magnesium is a key mineral for heart and muscle function, included to support healthy blood pressure.</p>
           <div class="bn" lang="bn" data-cms="ing.c3.bn">সুস্থ রক্তচাপের সহায়তায় — ম্যাগনেসিয়াম</div>
         </article>
-        <article class="ing-card rv" data-sym="Ion" data-label="Ion-Blend" data-rot="4">
+        <article class="ing-card rv" data-sym="Proprietary" data-label="Ion-Blend" data-rot="4">
           <div class="ing-num">04 / 04</div>
           <h3 data-cms="ing.c4.title">Healthy blood sugar levels</h3>
           <span class="benefit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></svg><span data-cms="ing.c4.pill">with Proprietary Ion-Blend</span></span>
@@ -873,7 +874,7 @@ function setActive(i) {
   dots.forEach((d, j) => d.classList.toggle("on", j === i));
   ingBottle.style.transform = `rotate(${c.dataset.rot}deg) translateY(${i % 2 ? -10 : 10}px)`;
   symBox.classList.add("swap");
-  setTimeout(() => { sym.textContent = c.dataset.sym; symLabel.innerHTML = c.dataset.label; symBox.classList.remove("swap"); }, 180);
+  setTimeout(() => { sym.textContent = c.dataset.sym; sym.classList.toggle("long", c.dataset.sym.length > 7); symLabel.innerHTML = c.dataset.label; symBox.classList.remove("swap"); }, 180);
 }
 // The active card is the last one whose top has crossed the middle of the screen.
 function pickCard() {
