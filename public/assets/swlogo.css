@@ -1,0 +1,6 @@
+/* Super Water wordmarks, traced from the bottle label artwork.
+   English: assets/sw-en.svg   Bangla: assets/sw-bn.png (cut out from the label artwork)
+   Size with font-size on .sw: the wordmark is 1.7em tall. */
+.sw { display: inline-block; line-height: 0; text-decoration: none; vertical-align: middle; }
+.sw img { display: block; height: 1.7em; width: auto; max-width: 100%; }
+.sw.sw-bn img { height: 2.2em; }

@@ -1,0 +1,16 @@
+{
+  "name": "superwater-site",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Super Water website with content management, inventory and orders.",
+  "type": "module",
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "db:setup": "node scripts/setup-db.js",
+    "dev": "node scripts/dev-server.js",
+    "test": "node scripts/smoke-test.js"
+  },
+  "dependencies": {
+    "postgres": "3.4.5"
+  }
+}

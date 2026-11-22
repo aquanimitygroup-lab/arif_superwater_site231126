@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Your order | Super Water</title>
+<link rel="icon" href="/assets/q-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/swlogo.css">
+<style>
+  :root { --navy:#0E1036; --cyan:#00B4D3; --cyan-deep:#0093AF; --sky:#B3E1F2; --ice:#EEF9FD; --ink-2:#4A5070; --line:rgba(14,16,54,.12); --good:#11865B; --bad:#D63B5B; }
+  * { box-sizing: border-box; margin: 0; }
+  [hidden] { display: none !important; }
+  body { min-height: 100vh; background: linear-gradient(180deg, #F5FCFE, var(--sky)); color: var(--navy); font-family: "Red Hat Display", system-ui, sans-serif; padding: 32px 16px 64px; }
+  .wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 20px; }
+  .brand { display: flex; flex-direction: column; gap: 5px; text-decoration: none; }
+  .brand img { height: 22px; width: auto; align-self: flex-start; }
+  .brand .sw { font-size: 30px; margin-left: -.04em; }
+  .card { background: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 30px 60px -40px rgba(14,16,54,.5); display: grid; gap: 14px; }
+  h1 { font-size: 28px; font-weight: 900; letter-spacing: -.02em; line-height: 1.1; }
+  .code { font-weight: 800; color: var(--cyan-deep); letter-spacing: .04em; }
+  .msg { color: var(--ink-2); font-size: 16px; line-height: 1.5; }
+  .state { display: inline-block; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 999px; background: var(--ice); color: var(--cyan-deep); justify-self: start; }
+  .state.good { background: #E3F5EC; color: var(--good); }
+  .state.bad { background: #FCE6EB; color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  td { padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  td.r { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.total td { border: 0; font-weight: 900; font-size: 18px; padding-top: 14px; }
+  .btn { display: inline-flex; justify-content: center; align-items: center; height: 50px; padding: 0 24px; border-radius: 999px; background: var(--navy); color: #fff; font-weight: 700; text-decoration: none; }
+  .steps { display: flex; gap: 6px; }
+  .steps i { flex: 1; height: 6px; border-radius: 99px; background: var(--line); }
+  .steps i.on { background: var(--cyan); }
+  .steps-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="brand" href="/" aria-label="Super Water home"><img src="/assets/aquanimity.png" alt="Aquanimity"><span class="sw"><img src="/assets/sw-en.svg" alt="" width="769" height="337"></span></a>
+  <section class="card" id="card">
+    <p class="msg" id="loading">Loading your order…</p>
+  </section>
+</main>
+<script>
+const p = new URLSearchParams(location.search);
+const tk = (n) => "Tk " + Number(n).toLocaleString("en-IN");
+const card = document.getElementById("card");
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+(async () => {
+  try {
+    const r = await fetch(`/api/site?action=order&code=${encodeURIComponent(p.get("code") || "")}&token=${encodeURIComponent(p.get("token") || "")}`);
+    const o = await r.json();
+    if (!r.ok) throw new Error(o.error || "We could not find this order.");
+
+    let title, msg, state, cls = "";
+    const online = o.payment_method !== "cod";
+    if (o.status === "cancelled" && online && o.payment_status === "failed") {
+      title = "Payment didn't go through"; msg = "Your payment was not completed, so this order was cancelled and you have not been charged. You can try again from the shop."; state = "Cancelled"; cls = "bad";
+    } else if (o.status === "cancelled") {
+      title = "Order cancelled"; msg = "This order has been cancelled. Contact us if you think this is a mistake."; state = "Cancelled"; cls = "bad";
+    } else if (online && o.payment_status !== "paid") {
+      title = "Confirming your payment"; msg = "We're waiting for the payment provider to confirm. Refresh this page in a minute."; state = "Payment pending";
+    } else if (o.status === "delivered") {
+      title = "Delivered"; msg = "Your Super Water has been delivered. Enjoy!"; state = "Delivered"; cls = "good";
+    } else if (o.status === "dispatched") {
+      title = "On its way"; msg = "Your order has left our facility and is on its way to you."; state = "Dispatched"; cls = "good";
+    } else if (online) {
+      title = "Payment received"; msg = "Thank you! Your order is confirmed and will be dispatched soon."; state = "Paid"; cls = "good";
+    } else {
+      title = "Order received"; msg = "Thank you! We'll call you shortly to confirm your order and delivery time. Please keep the cash ready on delivery."; state = o.status === "confirmed" ? "Confirmed" : "Received";
+    }
+    const step = { pending: 1, confirmed: 2, dispatched: 3, delivered: 4 }[o.status] || 0;
+
+    card.replaceChildren(
+      el("span", `state ${cls}`, state),
+      el("h1", null, title),
+      el("p", "code", `Order ${o.code}`),
+      el("p", "msg", msg),
+    );
+    if (o.status !== "cancelled") {
+      const bar = el("div", "steps"); for (let i = 1; i <= 4; i++) bar.append(el("i", i <= step ? "on" : ""));
+      const labels = el("div", "steps-label"); ["Received", "Confirmed", "Dispatched", "Delivered"].forEach((t) => labels.append(el("span", null, t)));
+      card.append(bar, labels);
+    }
+    const t = el("table"); const tb = document.createElement("tbody"); t.append(tb);
+    for (const i of o.items) { const tr = el("tr"); tr.append(el("td", null, `${i.qty} × ${i.name}`), el("td", "r", tk(i.qty * i.price))); tb.append(tr); }
+    const del = el("tr"); del.append(el("td", null, "Delivery"), el("td", "r", o.delivery_fee ? tk(o.delivery_fee) : "Free")); tb.append(del);
+    const tot = el("tr", "total"); tot.append(el("td", null, "Total"), el("td", "r", tk(o.total))); tb.append(tot);
+    card.append(t);
+    const back = el("a", "btn", o.status === "cancelled" ? "Back to the shop" : "Back to Super Water"); back.href = o.status === "cancelled" ? "/#shop" : "/";
+    card.append(back);
+  } catch (e) {
+    card.replaceChildren(el("h1", null, "Order not found"), el("p", "msg", e.message), Object.assign(el("a", "btn", "Back to Super Water"), { href: "/" }));
+  }
+})();
+</script>
+</body>
+</html>
