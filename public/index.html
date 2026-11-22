@@ -538,7 +538,7 @@ body.cart-open .drawer{transform:none;visibility:visible}
 
     <div class="hero-bottle">
       <div class="halo"></div>
-      <img id="heroBottle" src="assets/bottle.webp" alt="A 500 mL bottle of Super Water">
+      <img id="heroBottle" src="assets/bottle-clear-v2.webp" alt="A 500 mL bottle of Super Water">
       <div class="shadow"></div>
     </div>
 
@@ -572,7 +572,7 @@ body.cart-open .drawer{transform:none;visibility:visible}
       <div class="ing-stage" aria-hidden="true">
         <div class="ing-ring"></div>
         <div class="ing-symbol"><b id="ingSym">K</b><small id="ingSymLabel">Potassium</small></div>
-        <img id="ingBottle" src="assets/bottle.webp" alt="">
+        <img id="ingBottle" src="assets/bottle-clear-v2.webp" alt="">
         <div class="ing-dots"><i class="on"></i><i></i><i></i><i></i></div>
       </div>
 
@@ -930,7 +930,7 @@ function renderPlans() {
   document.getElementById("plans").innerHTML = PLANS[size].filter(pl => PRODUCTS[pl.sku] && PRODUCTS[pl.sku].active !== false).map(pl => {
     const p = PRODUCTS[pl.sku];
     const soldOut = PRODUCTS[pl.sku].unit > LIVE.available[sizeOf(pl.sku)];
-    const imgs = '<img src="assets/bottle.webp" alt="">'.repeat(pl.show);
+    const imgs = '<img src="assets/bottle-clear-v2.webp" alt="">'.repeat(pl.show);
     const saving = p.was > p.price;
     return `<article class="plan${pl.best ? " best" : ""}${soldOut ? " soldout" : ""}" data-sku="${esc(pl.sku)}">
       ${pl.badge ? `<span class="badge${pl.soft ? " soft" : ""}">${esc(pl.badge)}</span>` : ""}
@@ -977,7 +977,7 @@ function renderCart() {
   $("cartItems").innerHTML = skus.map(k => {
     const p = PRODUCTS[k], q = cart[k];
     return `<div class="line">
-      <div class="thumb"><img src="assets/bottle.webp" alt=""></div>
+      <div class="thumb"><img src="assets/bottle-clear-v2.webp" alt=""></div>
       <div><h4>${esc(p.name)}</h4><div class="lp">${tk(p.price)} ${p.was > p.price ? `<s>${tk(p.was)}</s>` : ""}</div>
         <div class="qty"><button aria-label="Decrease" data-dec="${esc(k)}">−</button><span>${q}</span><button aria-label="Increase" data-inc="${esc(k)}">+</button></div></div>
       <div><div class="lt">${tk(p.price * q)}</div><button class="rm" data-rm="${esc(k)}">Remove</button></div>
